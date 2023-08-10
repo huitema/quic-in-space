@@ -142,6 +142,16 @@ connection attempt will be interrupted by the Idle Timeout and will fail.
 
 # Flow control and congestion control
 
+QUIC congestion control and flow control processes both control how fast an endpoint
+can send, either using local measurements of network capacity in the case of
+congestion control, or abiding to transmission limits set by the peer in the case
+of congestion control.
+
+In both cases, if the transmission limits are smaller than the "bandwidth delay product"
+(BDP),
+transmission will throttled. Because of long delays, the BDP required for spatial
+communications can be quite large, as we discuss in the next sections.
+
 ## Flow control
 
 ## Congestion control and slow start

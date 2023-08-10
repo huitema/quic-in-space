@@ -152,13 +152,35 @@ In both cases, if the transmission limits are smaller than the "bandwidth delay 
 transmission will throttled. Because of long delays, the BDP required for spatial
 communications can be quite large, as we discuss in the next sections.
 
-## Flow control
+## Flow Control
 
-## Congestion control and slow start
+## Congestion control and Slow Start
+
+# Packet losses
+
+Packet losses will likely occur in space communications like in other media. The
+loss recovery mechanisms spedified in {{QUIC-RECOVERY}} correct losses after
+at best one RTT, with repeated losses requiring further RTT sized delays. In space
+communications, the long delays for packet loss recovery will affect the
+responsiveness of the application. In some cases, the loss recovery delays may
+extend the duration of the transfer past the time of availability of the
+transmission links.
+
+## Packet Losses During Handshake 
 
 # Implementation Guidance
 
 TODO: pay attention to delays.
+
+## Setting the initial RTT
+
+## Setting the initial BDP
+
+(Cite existing work for geo satellites)
+
+## Using Forward Error Correction
+
+(Consider ananlogy with requirements for Media over QUIC)
 
 
 

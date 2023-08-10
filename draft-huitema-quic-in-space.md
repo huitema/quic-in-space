@@ -37,8 +37,8 @@ normative:
 
 informative:
 
+    DTN-ARCH: rfc4838
     QUIC-TRANSPORT: rfc9000
-    QUIC-TLS: rfc9001
     QUIC-RECOVERY: rfc9002
 
 --- abstract
@@ -53,7 +53,8 @@ such as IoT in disconnected and distant settings.
 # Introduction
 
 QUIC is a new transport bringing very interesting features that could enable
-its use in space, where TCP is not good, as assessed in xref RFC4838. However, QUIC was designed for
+its use in space, where TCP is not good, as assessed in {{DTN-ARCH}}.
+However, QUIC was designed for
 terrestrial Internet, which brings assumptions on typical delays and
 connectivity. In (deep) space, delays are much larger, in order of minutes
 (4-20 minutes to Mars), and long disruptions, such as because of orbital

@@ -92,12 +92,12 @@ Table of Contents
 1.  Introduction
 
    QUIC is a new transport bringing very interesting features that could
-   enable its use in space, where TCP is not good, as assessed in xref
-   RFC4838.  However, QUIC was designed for terrestrial Internet, which
-   brings assumptions on typical delays and connectivity.  In (deep)
-   space, delays are much larger, in order of minutes (4-20 minutes to
-   Mars), and long disruptions, such as because of orbital dynamics, in
-   order of minutes or hours or days.
+   enable its use in space, where TCP is not good, as assessed in
+   [DTN-ARCH].  However, QUIC was designed for terrestrial Internet,
+   which brings assumptions on typical delays and connectivity.  In
+   (deep) space, delays are much larger, in order of minutes (4-20
+   minutes to Mars), and long disruptions, such as because of orbital
+   dynamics, in order of minutes or hours or days.
 
    It may be possible to modify the base behavior of QUIC stacks to
    satisfy these requirements.  For example, several assumptions, such
@@ -216,14 +216,15 @@ Table of Contents
 
 8.2.  Informative References
 
+   [DTN-ARCH] Cerf, V., Burleigh, S., Hooke, A., Torgerson, L., Durst,
+              R., Scott, K., Fall, K., and H. Weiss, "Delay-Tolerant
+              Networking Architecture", RFC 4838, DOI 10.17487/RFC4838,
+              April 2007, <https://www.rfc-editor.org/rfc/rfc4838>.
+
    [QUIC-RECOVERY]
               Iyengar, J., Ed. and I. Swett, Ed., "QUIC Loss Detection
               and Congestion Control", RFC 9002, DOI 10.17487/RFC9002,
               May 2021, <https://www.rfc-editor.org/rfc/rfc9002>.
-
-   [QUIC-TLS] Thomson, M., Ed. and S. Turner, Ed., "Using TLS to Secure
-              QUIC", RFC 9001, DOI 10.17487/RFC9001, May 2021,
-              <https://www.rfc-editor.org/rfc/rfc9001>.
 
    [QUIC-TRANSPORT]
               Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based

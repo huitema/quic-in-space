@@ -57,7 +57,7 @@ its use in space, where TCP is not good, as assessed in xref RFC4838. However, Q
 terrestrial Internet, which brings assumptions on typical delays and
 connectivity. In (deep) space, delays are much larger, in order of minutes
 (4-20 minutes to Mars), and long disruptions, such as because of orbital
-dynamics, in order minutes or hours or days.
+dynamics, in order of minutes or hours or days.
 
 It may be possible to modify the base behavior of QUIC stacks to satisfy
 these requirements. For example, several assumptions, such as initial RTT,
@@ -69,6 +69,8 @@ communications in QUIC implementations. It should be noted that it may also appl
 to other use cases that have similar characteristics, such as IoT in disconnected
 and far away settings, but these are not considered specifically in this document.
 
+Various other considerations such as how to store packets during disruptions or
+network management considerations are out of scope of this document.
 
 # Conventions and Definitions
 

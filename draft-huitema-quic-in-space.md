@@ -65,8 +65,8 @@ are just static constants in the code that could be externalized so they
 could better start the QUIC machinery in the context of space.
 
 The purpose of this document is to provide guidance for supporting space
-communications in QUIC implementations. It should be noted that it may also apply 
-to other use cases that have similar characteristics, such as IoT in disconnected 
+communications in QUIC implementations. It should be noted that it may also apply
+to other use cases that have similar characteristics, such as IoT in disconnected
 and far away settings, but these are not considered specifically in this document.
 
 

@@ -2,7 +2,8 @@
 
 This is the working area for the individual Internet-Draft, "QUIC in Space".
 
-* [Editor's Copy](https://github.com.github.io/huitema/#go.draft-huitema-quic-in-space.html)
+* [Editor's  
+Copy](https://huitema.github.io/quic-in-space/draft-huitema-quic-in-space.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-huitema-quic-in-space)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-huitema-quic-in-space)
 * [Compare Editor's Copy to Individual Draft](https://huitema.github.io/quic-in-space/#go.draft-huitema-quic-in-space.diff)

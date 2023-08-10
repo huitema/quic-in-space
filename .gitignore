@@ -1,4 +1,3 @@
-
 *.html
 *.pdf
 *.redxml
@@ -13,13 +12,12 @@
 /.targets.mk
 /.venv/
 /.vscode/
-//Users/christianhuitema/Documents/projects/quic-in-space/lib
+/lib
 /node_modules/
 /versioned/
 Gemfile.lock
 archive.json
 draft-huitema-quic-in-space.xml
-lib
 package-lock.json
 report.xml
 !requirements.txt

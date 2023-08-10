@@ -5,13 +5,13 @@ This is the working area for the individual Internet-Draft, "QUIC in Space".
 * [Editor's Copy](https://github.com.github.io/huitema/#go.draft-huitema-quic-in-space.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-huitema-quic-in-space)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-huitema-quic-in-space)
-* [Compare Editor's Copy to Individual Draft](https://github.com.github.io/huitema/#go.draft-huitema-quic-in-space.diff)
+* [Compare Editor's Copy to Individual Draft](https://huitema.github.io/quic-in-space/#go.draft-huitema-quic-in-space.diff)
 
 
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/github.com/huitema/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/huitema/quic-in-space/blob/main/CONTRIBUTING.md).
 
 Contributions can be made by creating pull requests.
 The GitHub interface supports creating pull requests using the Edit (✏) button.

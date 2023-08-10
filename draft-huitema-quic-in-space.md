@@ -9,19 +9,19 @@ number:
 date:
 consensus: true
 v: 3
-area: transport
-workgroup: quic
+area: "Transport"
+workgroup: "QUIC"
 keyword:
  - quic
  - delay tolerant
  - space communication
 venue:
-  group: quic
-  type: Working Group
-  mail: quic@ietf.org
-  arch: https://mailarchive.ietf.org/arch/browse/quic/
-  github: huitema/quic-in-space
-  latest: https://github.com/huitema/huitema.github.io/draft-huitema-quic-in-space-latest.html
+  group: "QUIC"
+  type: "Working Group"
+  mail: "quic@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/quic/"
+  github: "huitema/quic-in-space"
+  latest: "https://huitema.github.io/quic-in-space/draft-huitema-quic-in-space.html"
 
 author:
  -

@@ -1337,6 +1337,14 @@ connection attempt will be interrupted by the Idle Timeout and will fail.<a href
       <h2 id="name-flow-control-and-congestion">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-flow-control-and-congestion" class="section-name selfRef">Flow control and congestion control</a>
       </h2>
+<p id="section-4-1">QUIC congestion control and flow control processes both control how fast an endpoint
+can send, either using local measurements of network capacity in the case of
+congestion control, or abiding to transmission limits set by the peer in the case
+of congestion control.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">In both cases, if the transmission limits are smaller than the "bandwidth delay product"
+(BDP),
+transmission will throttled. Because of long delays, the BDP required for spatial
+communications can be quite large, as we discuss in the next sections.<a href="#section-4-2" class="pilcrow">¶</a></p>
 <div id="flow-control">
 <section id="section-4.1">
         <h3 id="name-flow-control">

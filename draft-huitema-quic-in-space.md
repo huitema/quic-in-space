@@ -1,30 +1,10 @@
 ---
-###
-# Internet-Draft Markdown Template
-#
-# Rename this file from draft-todo-yourname-protocol.md to get started.
-# Draft name format is "draft-<yourname>-<workgroup>-<name>.md".
-#
-# For initial setup, you only need to edit the first block of fields.
-# Only "title" needs to be changed; delete "abbrev" if your title is short.
-# Any other content can be edited, but be careful not to introduce errors.
-# Some fields will be set automatically during setup if they are unchanged.
-#
-# Don't include "-00" or "-latest" in the filename.
-# Labels in the form draft-<yourname>-<workgroup>-<name>-latest are used by
-# the tools to refer to the current version; see "docname" for example.
-#
-# This template uses kramdown-rfc: https://github.com/cabo/kramdown-rfc
-# You can replace the entire file if you prefer a different format.
-# Change the file extension to match the format (.xml for XML, etc...)
-#
-###
 title: "QUIC in Space"
 abbrev: "QUIC in Space"
 category: info
 
 docname: draft-huitema-quic-in-space-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
+submissiontype: IETF
 number:
 date:
 consensus: true
@@ -32,9 +12,9 @@ v: 3
 area: transport
 workgroup: quic
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - quic
+ - delay tolerant
+ - space communication
 venue:
   group: quic
   type: Working Group
@@ -48,27 +28,112 @@ author:
     fullname: Christian Huitema
     organization: Private Octopus Inc.
     email: huitema@huitema.net
+ -
+    fullname: Marc Blanchet
+    organization: Viagenie
+    email: marc.blanchet@viagenie.ca
 
 normative:
 
 informative:
 
+    QUIC-TRANSPORT: rfc9000
+    QUIC-TLS: rfc9001
+    QUIC-RECOVERY: rfc9002
 
 --- abstract
-
-TODO Abstract
-
+Discuss the challenges of running QUIC in space.
+Incorporate results from Hackathon at IETF 117.
+Provide guidance to implementations.
 
 --- middle
 
 # Introduction
 
-TODO Introduction
+QUIC is a new transport bringing very interesting features that could enable
+its use in space, while TCP is not good. However, QUIC was designed for
+terrestrial Internet, which brings assumptions on typical delays and
+connectivity. In (deep) space, delays are much larger, in order of minutes
+(4-20 minutes to Mars), and long disruptions, such as because of orbital
+mechanics, in order minutes or hours or days.
+
+It may be possible to modify the base behavior of QUIC stacks to satisfy
+these requirements. For example, several assumptions, such as initial delay,
+are just static constants in the code that could be externalized so they
+could better start the QUIC machinery in the context of space.
+
+The purpose of this document is to provide guidance for supporting space
+communication in QUIC implementations.
 
 
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
+
+# Timer Constants in QUIC
+
+QUIC implementations typically use a number of time related variables,
+with different characteristics. Some may be constants suggested by the
+QUIC specification or chosen by the stack developers, some may
+be negotiated between peers, and some may be discovered as part of running
+the protocol. We are mostly concerned here with the constant values,
+which we discuss in the following sections.
+
+## Probe Timeout and Initial RTT
+
+As defined in {{QUIC-RECOVERY}}, QUIC uses two mechanisms to detect packet losses.
+The acknowledgement based method detect losses if a packet is not yet
+acknowledged while packets sent later have already been. That method works
+well even if the transmission delay is long, but cannot detect the loss
+of the "last packet". For that, QUIC uses the probe timeout defined
+in {{Section 6.2 of QUIC-RECOVERY}}. If the last packet is not yet acknowledged
+after the probe timeout, the endpoint sends a "probe" to trigger an acknwledgement.
+The probe timer is initially set as a function of the measured RTT and RTTVAR. It
+is then increased exponentially as the number of unacknowledged repetitions increases.
+
+The mechanism works well if the transmission delay is long after the RTT has
+been evaluated at least once. But before that, the probe timeout is set as a function of
+the Initial RTT, whose recommended value is 333 milliseconds per {{Section 6.2.2 of
+QUIC-RECOVERY}}. Many implementations use smaller values
+because waiting too long results in longer connection delays when losses occur. The
+recommended initial value of 333ms results in a PTO of 1 second, but the shorter values
+used by some implementations can result in a PTO of 200 or 250ms. On a long delay link,
+we will probably see the following:
+
+1- Initial transmission
+2- First repeat after timer (e.g. 1 second)
+3- 2nd repeat after timer (e.g., 1 second again), after which the timer is doubled
+4- 3rd repeat after the increased (e.g., 2 seconds), after which the timer is doubled
+again
+5- etc.
+
+If we let the process go long enough, a succession of doubling will probably match
+the required value, probably after a dozen repeats if the delay is about 20 minutes. In
+that case, one of the dozen repeats will most likely be successful, but of course
+a lot of extra energy will have been expanded. But the connection establishment will fail
+if the process is interrupted too soon, either because the maximum number of repeats has
+been reached, or because the "idle timer" has been exceeded.
+
+## Idle Timeout
+
+The idle timeout is defined in {{Section 10.1 of QUIC-TRANSPORT}}. Each peer
+proposes a "max_idle_timeout" value, and commits to close the connection
+if no activity happens during that timeout. The "max_idle_timeout" value
+is often set as a constant by either the stack or the application using it,
+with typical values ranging from a few seconds to a few minutes.
+
+Short idle timeout value will interfere with space communications.
+
+# Flow control and congestion control
+
+## Flow control
+
+## Congestion control and slow start
+
+# Implementation Guidance
+
+TODO: pay attention to delays.
+
 
 
 # Security Considerations

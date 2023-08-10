@@ -42,10 +42,10 @@ informative:
     QUIC-RECOVERY: rfc9002
 
 --- abstract
-This document discusses the challenges of running the QUIC transport over deep space links, 
-where delays are in order of minutes and communications are based on scheduled time windows. 
-Using the experience of various testbeds, it provides guidance to implementations to support 
-this use case. This document may apply to other use cases that have similar characteristics, 
+This document discusses the challenges of running the QUIC transport over deep space links,
+where delays are in order of minutes and communications are based on scheduled time windows.
+Using the experience of various testbeds, it provides guidance to implementations to support
+this use case. This document may apply to other use cases that have similar characteristics,
 such as IoT in disconnected and distant settings.
 
 --- middle

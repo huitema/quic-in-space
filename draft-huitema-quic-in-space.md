@@ -131,7 +131,7 @@ is often set as a constant by either the stack or the application using it,
 with typical values ranging from a few seconds to a few minutes.
 
 The specification anticipated the usage of long delay links somewhat, and states
-that "To avoid excessively small idle timeout periods, endpoints MUST increase the idle 
+that "To avoid excessively small idle timeout periods, endpoints MUST increase the idle
 timeout period to be at least three times the current Probe Timeout (PTO)." This
 will prevent interference between the idle timeout once the PTO has been properly
 assessed. However, this proper assessment of the PTO requires properly assessing the

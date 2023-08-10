@@ -1173,7 +1173,7 @@ such as IoT in disconnected and distant settings.<a href="#section-abstract-1" c
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-timer-constants-in-quic" class="internal xref">Timer Constants in QUIC</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-probe-timeout-and-initial-r" class="internal xref">Probe Timeout and Initial RTT</a></p>
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-probe-timeout-and-initial-r" class="internal xref">Probe Timeout and Initial RTT (#initial-rtt)</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-idle-timeout" class="internal xref">Idle Timeout</a></p>
@@ -1268,10 +1268,10 @@ be negotiated between peers, and some may be discovered as part of running
 the protocol. Preliminary tests showed that setting the constant values
 appropriately seemed to make QUIC usable in those deep space scenarios. Therefore,
 this document discusses them in the following sections.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<div id="probe-timeout-and-initial-rtt">
+<div id="probe-timeout-and-initial-rtt-initial-rtt">
 <section id="section-3.1">
         <h3 id="name-probe-timeout-and-initial-r">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-probe-timeout-and-initial-r" class="section-name selfRef">Probe Timeout and Initial RTT</a>
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-probe-timeout-and-initial-r" class="section-name selfRef">Probe Timeout and Initial RTT (#initial-rtt)</a>
         </h3>
 <p id="section-3.1-1">As defined in <span>[<a href="#QUIC-RECOVERY" class="cite xref">QUIC-RECOVERY</a>]</span>, QUIC uses two mechanisms to detect packet losses.
 The acknowledgement based method detect losses if a packet is not yet
@@ -1289,18 +1289,25 @@ because waiting too long results in longer connection delays when losses occur. 
 recommended initial value of 333ms results in a PTO of 1 second, but the shorter values
 used by some implementations can result in a PTO of 200 or 250ms. On a long delay link,
 we will probably see the following:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">1- Initial transmission
-2- First repeat after timer (e.g. 1 second)
-3- 2nd repeat after timer (e.g., 1 second again), after which the timer is doubled
-4- 3rd repeat after the increased (e.g., 2 seconds), after which the timer is doubled
-again
-5- etc.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.1-3">
+<li id="section-3.1-3.1">Initial transmission<a href="#section-3.1-3.1" class="pilcrow">¶</a>
+</li>
+          <li id="section-3.1-3.2">First repeat after timer (e.g. 1 second)<a href="#section-3.1-3.2" class="pilcrow">¶</a>
+</li>
+          <li id="section-3.1-3.3">2nd repeat after timer (e.g., 1 second again), after which the timer is doubled<a href="#section-3.1-3.3" class="pilcrow">¶</a>
+</li>
+          <li id="section-3.1-3.4">3rd repeat after the increased (e.g., 2 seconds), after which the timer is doubled
+again<a href="#section-3.1-3.4" class="pilcrow">¶</a>
+</li>
+          <li id="section-3.1-3.5">etc.<a href="#section-3.1-3.5" class="pilcrow">¶</a>
+</li>
+        </ol>
 <p id="section-3.1-4">If we let the process go long enough, a succession of doubling will probably match
 the required value, probably after a dozen repeats if the delay is about 20 minutes. In
 that case, one of the dozen repeats will most likely be successful, but of course
 a lot of extra energy will have been expanded. But the connection establishment will fail
 if the process is interrupted too soon, either because the maximum number of repeats has
-been reached, or because the "idle timer" has been exceeded.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+been reached, or because the "idle timeouty" has been exceeded.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="idle-timeout">
@@ -1313,7 +1320,14 @@ proposes a "max_idle_timeout" value, and commits to close the connection
 if no activity happens during that timeout. The "max_idle_timeout" value
 is often set as a constant by either the stack or the application using it,
 with typical values ranging from a few seconds to a few minutes.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">Short idle timeout value will interfere with space communications.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">The specification anticipated the usage of long delay links somewhat, and states
+that "To avoid excessively small idle timeout periods, endpoints <span class="bcp14">MUST</span> increase the idle
+timeout period to be at least three times the current Probe Timeout (PTO)." This
+will prevent interference between the idle timeout once the PTO has been properly
+assessed. However, this proper assessment of the PTO requires properly assessing the
+RTT, which is requires a full RTT.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">If the Initial Idle Timeout, Initial RTT and Initial PTO are set values too small, the
+connection attempt will be interrupted by the Idle Timeout and will fail.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

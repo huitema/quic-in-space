@@ -166,7 +166,7 @@ responsiveness of the application. In some cases, the loss recovery delays may
 extend the duration of the transfer past the time of availability of the
 transmission links.
 
-## Packet Losses During Handshake 
+## Packet Losses During Handshake
 
 # Implementation Guidance
 

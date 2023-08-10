@@ -1,2 +1,25 @@
-lib
 
+*.html
+*.pdf
+*.redxml
+*.swp
+*.txt
+*.upload
+*~
+.tags
+/*-[0-9][0-9].xml
+/.gems/
+/.refcache
+/.targets.mk
+/.venv/
+/.vscode/
+//Users/christianhuitema/Documents/projects/quic-in-space/lib
+/node_modules/
+/versioned/
+Gemfile.lock
+archive.json
+draft-huitema-quic-in-space.xml
+lib
+package-lock.json
+report.xml
+!requirements.txt

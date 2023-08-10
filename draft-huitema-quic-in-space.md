@@ -42,28 +42,31 @@ informative:
     QUIC-RECOVERY: rfc9002
 
 --- abstract
-Discuss the challenges of running QUIC in space.
-Incorporate results from Hackathon at IETF 117.
-Provide guidance to implementations.
+This document discusses the challenges of running the QUIC transport over deep space links, where delays are in order of minutes
+and communications are based on scheduled time windows. Using the experience of various testbeds, it provides guidance to 
+implementations to support this use case. This document may apply to other use cases that have similar characteristics, such as 
+IoT in disconnected and far away settings.
 
 --- middle
 
 # Introduction
 
 QUIC is a new transport bringing very interesting features that could enable
-its use in space, while TCP is not good. However, QUIC was designed for
+its use in space, where TCP is not good, as assessed in xref RFC4838. However, QUIC was designed for
 terrestrial Internet, which brings assumptions on typical delays and
 connectivity. In (deep) space, delays are much larger, in order of minutes
 (4-20 minutes to Mars), and long disruptions, such as because of orbital
-mechanics, in order minutes or hours or days.
+dynamics, in order minutes or hours or days.
 
 It may be possible to modify the base behavior of QUIC stacks to satisfy
-these requirements. For example, several assumptions, such as initial delay,
+these requirements. For example, several assumptions, such as initial RTT,
 are just static constants in the code that could be externalized so they
 could better start the QUIC machinery in the context of space.
 
 The purpose of this document is to provide guidance for supporting space
-communication in QUIC implementations.
+communications in QUIC implementations. It should be noted that it may also apply 
+to other use cases that have similar characteristics, such as IoT in disconnected 
+and far away settings, but these are not considered specifically in this document.
 
 
 # Conventions and Definitions
@@ -76,8 +79,9 @@ QUIC implementations typically use a number of time related variables,
 with different characteristics. Some may be constants suggested by the
 QUIC specification or chosen by the stack developers, some may
 be negotiated between peers, and some may be discovered as part of running
-the protocol. We are mostly concerned here with the constant values,
-which we discuss in the following sections.
+the protocol. Preliminary tests showed that setting the constant values
+appropriately seemed to make QUIC usable in those deep space scenarios. Therefore,
+this document discusses them in the following sections.
 
 ## Probe Timeout and Initial RTT
 

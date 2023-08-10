@@ -87,7 +87,7 @@ the protocol. Preliminary tests showed that setting the constant values
 appropriately seemed to make QUIC usable in those deep space scenarios. Therefore,
 this document discusses them in the following sections.
 
-## Probe Timeout and Initial RTT
+## Probe Timeout and Initial RTT (#initial-rtt)
 
 As defined in {{QUIC-RECOVERY}}, QUIC uses two mechanisms to detect packet losses.
 The acknowledgement based method detect losses if a packet is not yet
@@ -108,19 +108,19 @@ recommended initial value of 333ms results in a PTO of 1 second, but the shorter
 used by some implementations can result in a PTO of 200 or 250ms. On a long delay link,
 we will probably see the following:
 
-1- Initial transmission
-2- First repeat after timer (e.g. 1 second)
-3- 2nd repeat after timer (e.g., 1 second again), after which the timer is doubled
-4- 3rd repeat after the increased (e.g., 2 seconds), after which the timer is doubled
+1. Initial transmission
+2. First repeat after timer (e.g. 1 second)
+3. 2nd repeat after timer (e.g., 1 second again), after which the timer is doubled
+4. 3rd repeat after the increased (e.g., 2 seconds), after which the timer is doubled
 again
-5- etc.
+5. etc.
 
 If we let the process go long enough, a succession of doubling will probably match
 the required value, probably after a dozen repeats if the delay is about 20 minutes. In
 that case, one of the dozen repeats will most likely be successful, but of course
 a lot of extra energy will have been expanded. But the connection establishment will fail
 if the process is interrupted too soon, either because the maximum number of repeats has
-been reached, or because the "idle timer" has been exceeded.
+been reached, or because the "idle timeouty" has been exceeded.
 
 ## Idle Timeout
 
@@ -130,7 +130,15 @@ if no activity happens during that timeout. The "max_idle_timeout" value
 is often set as a constant by either the stack or the application using it,
 with typical values ranging from a few seconds to a few minutes.
 
-Short idle timeout value will interfere with space communications.
+The specification anticipated the usage of long delay links somewhat, and states
+that "To avoid excessively small idle timeout periods, endpoints MUST increase the idle 
+timeout period to be at least three times the current Probe Timeout (PTO)." This
+will prevent interference between the idle timeout once the PTO has been properly
+assessed. However, this proper assessment of the PTO requires properly assessing the
+RTT, which is requires a full RTT.
+
+If the Initial Idle Timeout, Initial RTT and Initial PTO are set values too small, the
+connection attempt will be interrupted by the Idle Timeout and will fail.
 
 # Flow control and congestion control
 

@@ -168,7 +168,7 @@ opening streams.
 The peer will not be blocked if three conditions are met:
 
 * the "max streams" credits allow for a number of stream at least as large as
-expected to be open in an RTT.     
+expected to be open in an RTT.
 * the global flow control (MAX DATA) allows transmission of a full
 bandwidth-delay product (BDP) worth of data,
 * for each stream, the stream flow control allows transmission of either a full
@@ -201,7 +201,7 @@ Implementations have tried to palliate this issue in many ways:
 * remember the delays and bandwidths of past connections and set the initial
   parameters of new connections accordingly,
 * obtain estimates of delays and bandwidth through network management interfaces
-  and use them to set appropriate parameters.  
+  and use them to set appropriate parameters.
 
 If initial parameters are set correctly, connections can still be unnecessarily
 throttled if they fail to adapt to changing conditions. For example, after the
@@ -252,7 +252,7 @@ TODO: pay attention to delays.
 
 (Cite existing work for geo satellites)
 
-## Using Forward Error Correction 
+## Using Forward Error Correction
 
 (Consider ananlogy with requirements for Media over QUIC)
 

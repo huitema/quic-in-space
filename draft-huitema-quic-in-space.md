@@ -147,14 +147,67 @@ can send, either using local measurements of network capacity in the case of
 congestion control, or abiding to transmission limits set by the peer in the case
 of congestion control.
 
-In both cases, if the transmission limits are smaller than the "bandwidth delay product"
-(BDP),
+In both cases, if the transmission limits are smaller than
+the "bandwidth delay product" (BDP),
 transmission will throttled. Because of long delays, the BDP required for spatial
 communications can be quite large, as we discuss in the next sections.
 
-## Flow Control
+# Flow Control
 
-## Congestion control and Slow Start
+Flow control in QUIC allow an endpoint to limit how many many bytes the peer
+can send on the opened streams, how many bytes the peer can send on specific streams,
+and how many streams the peer can open. Different stacks follow different strategies,
+balancing two risks:
+
+* if the flow control is too loose, the peer could send data faster than
+the local application can process and create a form of local congestion.
+* if the flow control is too restrictive, the peer will be blocked and
+will have to wait for the next flow control update before sending data or
+opening streams.
+
+The peer will not be blocked if three conditions are met:
+
+* the "max streams" credits allow for a number of stream at least as large as
+expected to be open in an RTT.     
+* the global flow control (MAX DATA) allows transmission of a full
+bandwidth-delay product (BDP) worth of data,
+* for each stream, the stream flow control allows transmission of either a full
+BDP worth of data, or the full size of the data stream.
+
+Setting these three limits correctly requires anticipating the RTT and bandwidth
+of the connection. Implementations relying on adaptive algorithms are at risk here,
+especially if they use a low default value until RTT and bandwidth have been
+measured.
+
+# Congestion control and Slow Start
+
+QUIC implementation use congestion control to ensure that they are not sending
+data faster than the network path can forward, which would cause network queues
+and packet drops. Congestion control will typically set a congestion window size
+(CWIN) to limit the amount of bytes in transit. Transmission will be slowed down
+CWIN is lower than the BDP.
+
+The main congestion control issues for long delay space connections are observed
+at the beginning of the connection. The congestion control algorithms typically
+start with conservative values of CWIN, which they ramp up progressively, typically
+not faster than one doubling per RTT. On a long delay space connection, this
+ramping up will take a very long time, leading to very inefficient use of the
+connection.
+
+Implementations have tried to palliate this issue in many ways:
+
+* measure the transmission speed of short trains of packets to rapidly estimate
+  the bandwidth of the connection,
+* remember the delays and bandwidths of past connections and set the initial
+  parameters of new connections accordingly,
+* obtain estimates of delays and bandwidth through network management interfaces
+  and use them to set appropriate parameters.  
+
+If initial parameters are set correctly, connections can still be unnecessarily
+throttled if they fail to adapt to changing conditions. For example, after the
+initial "slow start", the classic RENO algorithm moves to a "congestion avoidance"
+phase in which the CWIN increases by at most one packet per RTT -- which would be
+completely inadequate with RTTs of several minutes.
 
 # Packet losses
 
@@ -168,6 +221,27 @@ transmission links.
 
 ## Packet Losses During Handshake
 
+Packet losses during the initial handshake may prevent the endpoints from obtaining
+a proper estimate of the RTT. The implementations in these situations can either
+repeat the packets "too soon" if they underestimate the RTT, or "too late" if they
+set a large value. Expereince show that of those too pitfalls, "too soon" is much
+better, because it simply leads to repeating too many copies of the handshake
+packets. This may look wasteful, but it does ensure that the handshake completes
+rapidly even if some packets are actually lost.
+
+## Reordering Buffers
+
+If packets carrying stream data are lost, the other packets received on that stream
+are supposed to be buffered until the packet loss is corrected. Receivers have to be
+ready to buffer a full BDP worth of data. This means not only having large amount of
+receive buffers, but also make sure that reordering of data is done efficiently,
+risking otherwise some significant performance bottlenecks.
+
+Reordering will also interfere with per-stream and per-connection flow control. In
+{{flow-control}}, we wrote that the amount of credits should be at least one full BDP.
+But if we assume that a full BDP worth of buffers can be consumed by reordering
+after losses, then the required credits are actually two BDPs, not just one.
+
 # Implementation Guidance
 
 TODO: pay attention to delays.
@@ -178,7 +252,7 @@ TODO: pay attention to delays.
 
 (Cite existing work for geo satellites)
 
-## Using Forward Error Correction
+## Using Forward Error Correction 
 
 (Consider ananlogy with requirements for Media over QUIC)
 

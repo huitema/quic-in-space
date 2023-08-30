@@ -57,12 +57,13 @@ its use in space, where TCP is not good, as assessed in {{DTN-ARCH}}.
 However, QUIC was designed for
 terrestrial Internet, which brings assumptions on typical delays and
 connectivity. In (deep) space, delays are much larger, in order of minutes
-(4-20 minutes to Mars), and long disruptions, such as because of orbital
+(4-20 minutes from Earth to Mars), and long disruptions, such as because of orbital
 dynamics, in order of minutes or hours or days.
 
 It may be possible to modify the base behavior of QUIC stacks to satisfy
-these requirements. For example, several assumptions, such as initial RTT,
-are just static constants in the code that could be externalized so they
+these requirements. For example, several assumptions, such as the initial 
+round-trip time(RTT), are just static constants in the implementations 
+that could be externalized so they
 could better start the QUIC machinery in the context of space.
 
 The purpose of this document is to provide guidance for supporting space
@@ -93,7 +94,7 @@ As defined in {{QUIC-RECOVERY}}, QUIC uses two mechanisms to detect packet losse
 The acknowledgement based method detect losses if a packet is not yet
 acknowledged while packets sent later have already been. That method works
 well even if the transmission delay is long, but cannot detect the loss
-of the "last packet". For that, QUIC uses the probe timeout defined
+of the "last packet". For that, QUIC uses the probe timeout(PTO) defined
 in {{Section 6.2 of QUIC-RECOVERY}}. If the last packet is not yet acknowledged
 after the probe timeout, the endpoint sends a "probe" to trigger an acknwledgement.
 The probe timer is initially set as a function of the measured RTT and RTTVAR. It
@@ -120,7 +121,7 @@ the required value, probably after a dozen repeats if the delay is about 20 minu
 that case, one of the dozen repeats will most likely be successful, but of course
 a lot of extra energy will have been expanded. But the connection establishment will fail
 if the process is interrupted too soon, either because the maximum number of repeats has
-been reached, or because the "idle timeouty" has been exceeded.
+been reached, or because the "idle timeout" has been exceeded.
 
 ## Idle Timeout
 
@@ -149,13 +150,13 @@ of congestion control.
 
 In both cases, if the transmission limits are smaller than
 the "bandwidth delay product" (BDP),
-transmission will throttled. Because of long delays, the BDP required for spatial
+transmission will be throttled. Because of long delays, the BDP required for space
 communications can be quite large, as we discuss in the next sections.
 
 # Flow Control
 
-Flow control in QUIC allow an endpoint to limit how many many bytes the peer
-can send on the opened streams, how many bytes the peer can send on specific streams,
+Flow control in QUIC allows an endpoint to limit how many bytes the peer
+can send on the opened streams, on specific streams,
 and how many streams the peer can open. Different stacks follow different strategies,
 balancing two risks:
 
@@ -181,7 +182,7 @@ measured.
 
 # Congestion control and Slow Start
 
-QUIC implementation use congestion control to ensure that they are not sending
+QUIC implementations use congestion control to ensure that they are not sending
 data faster than the network path can forward, which would cause network queues
 and packet drops. Congestion control will typically set a congestion window size
 (CWIN) to limit the amount of bytes in transit. Transmission will be slowed down
@@ -222,9 +223,9 @@ transmission links.
 ## Packet Losses During Handshake
 
 Packet losses during the initial handshake may prevent the endpoints from obtaining
-a proper estimate of the RTT. The implementations in these situations can either
-repeat the packets "too soon" if they underestimate the RTT, or "too late" if they
-set a large value. Expereince show that of those too pitfalls, "too soon" is much
+a proper estimate of the RTT. An implementation in these situations can either
+repeat the packets "too soon" if it underestimates the RTT, or "too late" if it
+sets a large value. Experience showed that of those pitfalls, "too soon" is much
 better, because it simply leads to repeating too many copies of the handshake
 packets. This may look wasteful, but it does ensure that the handshake completes
 rapidly even if some packets are actually lost.

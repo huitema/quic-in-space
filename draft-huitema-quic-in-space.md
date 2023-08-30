@@ -61,8 +61,8 @@ connectivity. In (deep) space, delays are much larger, in order of minutes
 dynamics, in order of minutes or hours or days.
 
 It may be possible to modify the base behavior of QUIC stacks to satisfy
-these requirements. For example, several assumptions, such as the initial 
-round-trip time(RTT), are just static constants in the implementations 
+these requirements. For example, several assumptions, such as the initial
+round-trip time(RTT), are just static constants in the implementations
 that could be externalized so they
 could better start the QUIC machinery in the context of space.
 

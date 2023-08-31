@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-08-29T01:03:04.138285+00:00",
+  "timestamp": "2023-08-31T01:03:02.676564+00:00",
   "repo": "huitema/quic-in-space",
   "labels": [
     {
@@ -49,7 +49,94 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 3,
+      "id": "I_kwDOKFdyE85vrjX2",
+      "title": "idle_timeout = zero",
+      "url": "https://github.com/huitema/quic-in-space/issues/3",
+      "state": "OPEN",
+      "author": "marcblanchet",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We are currently talking about the idle_timeout which would have a value, but I think we should say something about not setting the idle_timeout. In fact, that should be a strong recommendation. Because the use case of deep space is that the ground stations and systems will be \"talking\" to the spacecrafts for as long as the whole lifetime of the mission: e.g. months, years, sometimes decades. And given that re-establishing a connection is \"costly\" in space because of delays and disruptions, and that re-establishing a connection is actually an additional risk if it fails or take too much time (think of urgent command to be sent because of a big issue), then the idle_timeout shall be preferred to be not set or set to zero.  I can write something and make a PR if you agree.",
+      "createdAt": "2023-08-30T13:30:25Z",
+      "updatedAt": "2023-08-30T18:10:30Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "body": "There are two parts: adapting to long delay links so the timeout does not cause unwanted disconnection; and, not closing connections unless explicitly asked for by the application. The first point is solved by the original QUIC spec mandating that the timeout is the max of the stated value and 3 times the RTT. The second point is entirely up to the application.\r\n\r\nSuppose a 20 minutes RTT. The default would be to close the connection after an hour of silence (3*RTT). The alternative, zero timeout, would be to allow transmission on the connection to continue after an hour of silence. The expectation is that just continuing would be less costly than restarting a new connection. I am not sure these expectations are true:\r\n\r\n1) After a long period of silence, we have an ambiguous situation. Is the other end still there, or not? If it is there, sending more data is mostly fine. If it is not, sending more data will cause packet losses, which will cause the closure of the connection after several retransmission attempts. It is not clear that this is better than a new connection attempt.\r\n\r\n2) After a long period of silence, the transmission conditions may have changed. Stations or relays may have moved, the transmission balance of some paths may have been altered, etc. The connection will have to find out the new values, and that process is very similar to starting a new connection.\r\n\r\n3) QUIC supports resuming and 0-RTT. If we also remember the RTT and BDP from previous connections, starting a new connection is going to be very efficient.\r\n\r\nEven if we want to maintain long duration connections, I think the solution is to mandate a \"keep alive\" process, such as a ping every 20 minutes, to make sure that the timeout does not expire. This is much more likely to work than just ignoring long silences and hoping that the link is still there.",
+          "createdAt": "2023-08-30T17:18:01Z",
+          "updatedAt": "2023-08-30T17:18:01Z"
+        },
+        {
+          "author": "marcblanchet",
+          "authorAssociation": "COLLABORATOR",
+          "body": "all good points. I wonder if these should be somewhat put in the draft. To me, there are really relevant, maybe more on the deployment side than pure implementation, but it could also show the choices for the base implementation to choose (aka externalize idle_timeout, making it per connection, per destination, ...",
+          "createdAt": "2023-08-30T18:10:30Z",
+          "updatedAt": "2023-08-30T18:10:30Z"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOKFdyE85vrlN2",
+      "title": "about draft-ietf-tsvwg-careful-resume",
+      "url": "https://github.com/huitema/quic-in-space/issues/4",
+      "state": "OPEN",
+      "author": "marcblanchet",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Should we talk about draft-ietf-tsvwg-careful-resume? that could be useful? ",
+      "createdAt": "2023-08-30T13:34:32Z",
+      "updatedAt": "2023-08-30T17:19:15Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "body": "Yes. That should come in the recommendation parts. The draft should cite all these efforts.",
+          "createdAt": "2023-08-30T17:19:15Z",
+          "updatedAt": "2023-08-30T17:19:15Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOKFdyE85vrozD",
+      "title": "on initial connection on Earth",
+      "url": "https://github.com/huitema/quic-in-space/issues/5",
+      "state": "OPEN",
+      "author": "marcblanchet",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "An idea, mostly for deployment setup, but could be worth discussing, if the idea \"flies\".   Given that a spacecraft is something setup years in advance, well controlled, ..., what about configuring and setting up the initial QUIC connection while the ground systems and the spacecraft are still on Earth. Therefore, the security association is done, connection is established. Then, maybe using careful-resume, update the RTT as the spacecraft moves in space. This decreases the risk of issue with connection establishment while in space, avoiding the possible packet losses complication at connection establishment time.",
+      "createdAt": "2023-08-30T13:41:51Z",
+      "updatedAt": "2023-08-30T18:11:59Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "body": "Sure, but what if the connection breaks for some reason? Don't we have to then start new connections?\r\n\r\nMaybe we should instead program the list of \"trusted certificates\" in the spacecraft before launch, and look at issues such as key expiration.\r\n\r\nLike, what would that do for Voyager?",
+          "createdAt": "2023-08-30T17:22:09Z",
+          "updatedAt": "2023-08-30T17:22:09Z"
+        },
+        {
+          "author": "marcblanchet",
+          "authorAssociation": "COLLABORATOR",
+          "body": "trusted certificates would be a must. and key expiration is required to be handled. Again, probably more deployment considerations, but might be worth mentioning. ",
+          "createdAt": "2023-08-30T18:11:59Z",
+          "updatedAt": "2023-08-30T18:11:59Z"
+        }
+      ]
+    }
+  ],
   "pulls": [
     {
       "number": 1,
@@ -78,6 +165,74 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOKFdyE85ZFw-J",
+      "title": "Text on flow control, congestion control and packet losses.",
+      "url": "https://github.com/huitema/quic-in-space/pull/2",
+      "state": "MERGED",
+      "author": "huitema",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-08-30T01:21:20Z",
+      "updatedAt": "2023-08-30T01:25:27Z",
+      "baseRepository": "huitema/quic-in-space",
+      "baseRefName": "main",
+      "baseRefOid": "17a273b114e12274cd8c8a984d3d1e9089e8b12e",
+      "headRepository": "huitema/quic-in-space",
+      "headRefName": "packet-losses",
+      "headRefOid": "875eb22a43fcc26358d93e048a02da8477fa1052",
+      "closedAt": "2023-08-30T01:25:14Z",
+      "mergedAt": "2023-08-30T01:25:14Z",
+      "mergedBy": "huitema",
+      "mergeCommit": {
+        "oid": "9f6b05897c94053f60b4083940d1ed8de5277420"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 6,
+      "id": "PR_kwDOKFdyE85ZJIcL",
+      "title": "no substantial changes, just wording, typos, english",
+      "url": "https://github.com/huitema/quic-in-space/pull/6",
+      "state": "OPEN",
+      "author": "marcblanchet",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-08-30T13:45:41Z",
+      "updatedAt": "2023-08-30T17:23:52Z",
+      "baseRepository": "huitema/quic-in-space",
+      "baseRefName": "main",
+      "baseRefOid": "9f6b05897c94053f60b4083940d1ed8de5277420",
+      "headRepository": "marcblanchet/quic-in-space-fork",
+      "headRefName": "main",
+      "headRefOid": "43d73bb89001dd7ab4726d6eef147753c92281f2",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKFdyE85fjo5W",
+          "commit": {
+            "abbreviatedOid": "43d73bb"
+          },
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-08-30T17:23:52Z",
+          "updatedAt": "2023-08-30T17:23:52Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }

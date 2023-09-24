@@ -216,10 +216,10 @@ The congestion control issues are not specific to the very long delays of
 space communications. They are visible on paths through geostationary
 satellites. The recommended approach is to somehow remember path characteristics
 from previous connections, then use the remembered values to speed up
-the start-up phase of congestion control. 
+the start-up phase of congestion control.
 
 The "careful resume" draft suggest a cautious approach of only using the remembered
-BDP values after the RTT has been verified, see {{I-D.ietf-tsvwg-careful-resume}}.
+BDP values after the RTT has been verified, see {{!I-D.tsvwg-careful-resume}}.
 This verification takes one RTT, which is a tradeoff between the desire to ramp up
 transmission rate promptly and the risk of causing congestion on the transmission
 path if the remembered value exceeds the current path characteristics.
@@ -265,7 +265,7 @@ after losses, then the required credits are actually two BDPs, not just one.
 
 The effect of packet losses could be alleviated by using some form of
 Forward Error Correction. This is an active research issue, see for example
-{{I-D.michel-quic-fec}}
+{{?I-D.michel-quic-fec}}
 
 # Further studies
 
@@ -282,7 +282,7 @@ keys. This document discusses the effects of long delays on the initial
 handshake, which embeds the TLS 1.3 handshake. There are secondary effects
 that ought to be discussed, such as the handling of certificate verification
 and possibly certificate revocations, or the extra roundtrip required
-for performing client authorization. 
+for performing client authorization.
 
 It is probably possible to use multiple path to increase the throughput
 or reliability of transmissions. Operating multiple path with long delays

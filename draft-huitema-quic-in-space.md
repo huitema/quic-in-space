@@ -39,6 +39,7 @@ informative:
 
     DTN-ARCH: rfc4838
     QUIC-TRANSPORT: rfc9000
+    QUIC-TLS: rfc9001
     QUIC-RECOVERY: rfc9002
 
 --- abstract
@@ -77,7 +78,7 @@ network management considerations are out of scope of this document.
 
 {::boilerplate bcp14-tagged}
 
-# Timer Constants in QUIC
+# Timer Constants in QUIC {#timers}
 
 QUIC implementations typically use a number of time related variables,
 with different characteristics. Some may be constants suggested by the
@@ -120,7 +121,16 @@ the required value, probably after a dozen repeats if the delay is about 20 minu
 that case, one of the dozen repeats will most likely be successful, but of course
 a lot of extra energy will have been expanded. But the connection establishment will fail
 if the process is interrupted too soon, either because the maximum number of repeats has
-been reached, or because the "idle timeouty" has been exceeded.
+been reached, or because the "idle timeout" has been exceeded.
+
+## Server Side Timeout (#server-timeout)
+
+The long delays also affect the server side of the handshake.
+The server will only be able to assess the RTT of the initial path when it receives
+the first acknowledgement from the client. The handshake will fail if the server
+discards the connection state before receiving this first acknowledgement.
+As on the client side, this could happen if the maximum number of repeats has
+been reached, or if the "idle timeout" has been exceeded.
 
 ## Idle Timeout
 
@@ -140,17 +150,8 @@ RTT, which is requires a full RTT.
 If the Initial Idle Timeout, Initial RTT and Initial PTO are set values too small, the
 connection attempt will be interrupted by the Idle Timeout and will fail.
 
-# Flow control and congestion control
-
-QUIC congestion control and flow control processes both control how fast an endpoint
-can send, either using local measurements of network capacity in the case of
-congestion control, or abiding to transmission limits set by the peer in the case
-of congestion control.
-
-In both cases, if the transmission limits are smaller than
-the "bandwidth delay product" (BDP),
-transmission will throttled. Because of long delays, the BDP required for spatial
-communications can be quite large, as we discuss in the next sections.
+Since the idle timeout is negotiated as the minimum of the values proposed by the
+two endpoints, both peers should proposed values that allow for a successful handshake.
 
 # Flow Control
 
@@ -209,6 +210,23 @@ initial "slow start", the classic RENO algorithm moves to a "congestion avoidanc
 phase in which the CWIN increases by at most one packet per RTT -- which would be
 completely inadequate with RTTs of several minutes.
 
+## Setting the initial BDP
+
+The congestion control issues are not specific to the very long delays of
+space communications. They are visible on paths through geostationary
+satellites. The recommended approach is to somehow remember path characteristics
+from previous connections, then use the remembered values to speed up
+the start-up phase of congestion control. 
+
+The "careful resume" draft suggest a cautious approach of only using the remembered
+BDP values after the RTT has been verified, see {{I-D.ietf-tsvwg-careful-resume}}.
+This verification takes one RTT, which is a tradeoff between the desire to ramp up
+transmission rate promptly and the risk of causing congestion on the transmission
+path if the remembered value exceeds the current path characteristics.
+
+If the BDP is remembered and set, the value can also be used to set flow control
+parameters as mentioned in {{flow-control}}.
+
 # Packet losses
 
 Packet losses will likely occur in space communications like in other media. The
@@ -242,31 +260,44 @@ Reordering will also interfere with per-stream and per-connection flow control. 
 But if we assume that a full BDP worth of buffers can be consumed by reordering
 after losses, then the required credits are actually two BDPs, not just one.
 
-# Implementation Guidance
-
-TODO: pay attention to delays.
-
-## Setting the initial RTT
-
-## Setting the initial BDP
-
-(Cite existing work for geo satellites)
 
 ## Using Forward Error Correction
 
-(Consider ananlogy with requirements for Media over QUIC)
+The effect of packet losses could be alleviated by using some form of
+Forward Error Correction. This is an active research issue, see for example
+{{I-D.michel-quic-fec}}
 
+# Further studies
+
+There are other considerations related to using QUIC in space, related
+to naming, security, or the management of multiple paths.
+
+Most QUIC stack can set connections towards specified IP addresses, but
+most existing QUIC applications rely on the DNS to find the IP addresses
+associated to names of servers. Using DNS in space probably poses its own set
+of challenges, which deserve their own study.
+
+Per {{QUIC-TLS}}, QUIC embeds TLS 1.3 and relies on it to negotiate security
+keys. This document discusses the effects of long delays on the initial
+handshake, which embeds the TLS 1.3 handshake. There are secondary effects
+that ought to be discussed, such as the handling of certificate verification
+and possibly certificate revocations, or the extra roundtrip required
+for performing client authorization. 
+
+It is probably possible to use multiple path to increase the throughput
+or reliability of transmissions. Operating multiple path with long delays
+ought to be discussed in a future version of this document.
 
 
 # Security Considerations
 
-TODO Security
-
+The solutions envisaged here to alleviate the effect of long delays on QUIC
+connections may well create some form of security issues. These ought to
+be discussed in a future version of this document.
 
 # IANA Considerations
 
 This document has no IANA actions.
-
 
 --- back
 

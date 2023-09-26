@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-08-31T01:03:02.676564+00:00",
+  "timestamp": "2023-09-26T01:04:25.026538+00:00",
   "repo": "huitema/quic-in-space",
   "labels": [
     {
@@ -233,6 +233,34 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOKFdyE85bEMkV",
+      "title": "Finish the version 00 of the draft.",
+      "url": "https://github.com/huitema/quic-in-space/pull/7",
+      "state": "MERGED",
+      "author": "huitema",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-09-24T21:38:05Z",
+      "updatedAt": "2023-09-24T23:06:20Z",
+      "baseRepository": "huitema/quic-in-space",
+      "baseRefName": "main",
+      "baseRefOid": "9f6b05897c94053f60b4083940d1ed8de5277420",
+      "headRepository": "huitema/quic-in-space",
+      "headRefName": "finish-00",
+      "headRefOid": "4c3341b1452b6b5bc04ac642d48bfbae6dfbbb06",
+      "closedAt": "2023-09-24T23:06:03Z",
+      "mergedAt": "2023-09-24T23:06:02Z",
+      "mergedBy": "huitema",
+      "mergeCommit": {
+        "oid": "53a57fbad64c0d036a11727a67ef488c83c375a8"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }

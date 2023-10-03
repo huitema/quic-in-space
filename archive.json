@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-09-26T01:04:25.026538+00:00",
+  "timestamp": "2023-10-03T01:04:45.514961+00:00",
   "repo": "huitema/quic-in-space",
   "labels": [
     {
@@ -133,6 +133,37 @@
           "body": "trusted certificates would be a must. and key expiration is required to be handled. Again, probably more deployment considerations, but might be worth mentioning. ",
           "createdAt": "2023-08-30T18:11:59Z",
           "updatedAt": "2023-08-30T18:11:59Z"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOKFdyE85yf0Ov",
+      "title": "32 bits vars",
+      "url": "https://github.com/huitema/quic-in-space/issues/8",
+      "state": "OPEN",
+      "author": "marcblanchet",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As you found in picoquic, time related vars that encode microseconds will be short if encoded as 32 bit integer, which means around 30 minutes max. There should be some text about that.",
+      "createdAt": "2023-10-01T19:56:48Z",
+      "updatedAt": "2023-10-02T06:21:38Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "marcblanchet",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I can start one if you'd like",
+          "createdAt": "2023-10-01T19:57:46Z",
+          "updatedAt": "2023-10-01T19:57:46Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "body": "~They are 64 bits by default. Where do se use 32 bits?~\r\n\r\nSorry, I misread the question. Yes, that's a potential issue. Note that the RFC does not ask anyone to store the time variables as microseconds. The ACK frame has an \"ACK Delay\" variable nominally in microseconds, but each endpoint can use an \"ack_delay_exponent\" of up to 20, and the microsecond value is \"ack_delay<<exponent\" -- use exponent 10 for milliseconds, give or take. RFC9002 introduces a value \"kGranularity\", effectively the unit of time for computation of RTT, etc., and the recommended value is 1ms.\r\n\r\nUsing ms, 32 bits would last about 49 days. Not great, but not 30 minutes...",
+          "createdAt": "2023-10-01T21:25:44Z",
+          "updatedAt": "2023-10-02T06:21:38Z"
         }
       ]
     }

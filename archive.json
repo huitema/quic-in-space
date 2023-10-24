@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-10-03T01:04:45.514961+00:00",
+  "timestamp": "2023-10-24T01:04:13.844320+00:00",
   "repo": "huitema/quic-in-space",
   "labels": [
     {
@@ -166,6 +166,54 @@
           "updatedAt": "2023-10-02T06:21:38Z"
         }
       ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOKFdyE850lZO8",
+      "title": "congestion control algorithm",
+      "url": "https://github.com/huitema/quic-in-space/issues/9",
+      "state": "OPEN",
+      "author": "marcblanchet",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "need a section on congestion control algorithm: cubic vs newreno vs bbr vs bbrv2",
+      "createdAt": "2023-10-22T16:12:23Z",
+      "updatedAt": "2023-10-22T16:12:23Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOKFdyE850lZ2u",
+      "title": "api and applications",
+      "url": "https://github.com/huitema/quic-in-space/issues/10",
+      "state": "OPEN",
+      "author": "marcblanchet",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "currently the draft kinda take the quic stack developer point of view. Appropriate and useful guidelines for the user of a QUIC stack API for the config of a new connection. (we could reference TAPS as an example, but not limited to). \r\n\r\nI can think of:\r\n- set keep alive to none or set the value to the largest expected RTT.  (TAPS has it)\r\n- set idle_timeout (TAPS has it)\r\n- set congestion control algorithm \r\n- set initial rtt\r\n",
+      "createdAt": "2023-10-22T16:19:44Z",
+      "updatedAt": "2023-10-22T16:19:44Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOKFdyE850sbZd",
+      "title": "ack frequency",
+      "url": "https://github.com/huitema/quic-in-space/issues/11",
+      "state": "OPEN",
+      "author": "marcblanchet",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "draft-ietf-quic-ack-frequency seems pretty relevant to what we are doing. Might want to say something about it",
+      "createdAt": "2023-10-23T18:47:18Z",
+      "updatedAt": "2023-10-23T18:47:18Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [

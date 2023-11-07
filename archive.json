@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-10-24T01:04:13.844320+00:00",
+  "timestamp": "2023-11-07T01:06:04.973322+00:00",
   "repo": "huitema/quic-in-space",
   "labels": [
     {
@@ -179,9 +179,17 @@
       "labels": [],
       "body": "need a section on congestion control algorithm: cubic vs newreno vs bbr vs bbrv2",
       "createdAt": "2023-10-22T16:12:23Z",
-      "updatedAt": "2023-10-22T16:12:23Z",
+      "updatedAt": "2023-11-06T07:25:18Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "body": "Yes. There are a few well known issues, and also a few subtle ones.\r\n\r\nReno embed time constants that makes it very inefficient on links with a large Bandwidth*Delay product.  In congestion avoidance mode, Reno increases the bandwidth by one packet per RTT -- and then shrinks the window by half in case of packet loss. This is a well known issue, discussed for example by Sally Floyd in [RFC3649](https://www.ietf.org/rfc/rfc3649.txt). Bottom line, Reno cannot be used on deep space links.\r\n\r\nCubic is in theory a bit better, but there is a catch. Cubic grows the window as a function of time spent from the beginning of the epoch, with the formula: \r\n\r\nWcubic(t) = C \\* (t - K)\\*\\*3 + Wmax\r\n\r\nIn that formula, C is a scaling constant determining the aggressiveness of the protocol in packets per second**3, and t is the time in seconds since the beginning of the epoch -- the recommended value being 0.4. The variable K in this formula acts as some kind of pseudo period. The window grows from an initial value at the beginning of the epoch to the nominal value \"Wmax\" after K seconds, after what it increases to probe the capacity of the link.\r\n\r\nK is computed at the beginning of the epoch as:\r\n\r\nK = cubic_root((Wmax - cwnd(epoch))/C)\r\n\r\nIn stable operation, Wmax is the congestion window at the end of the previous epoch, and \"cwnd(epoch)\" is the desired congestion window at the beginning of the epoch. Normally, cwnd(epoch) is set to beta\\*Wmax, the recommended value of beta being 0.7. We can assume that Wmax is the bandwidth\\*delay product, in packets, to get the formulas:\r\n\r\nWmax = BDP\r\ncwnd = beta\\*BDP\r\nK = cubic_root(BDP\\*(1-beta)/C)\r\n\r\nNow, let's plot the values for a variety of delays:\r\n\r\nC | Beta | Packet size (bytes) | RTT(sec) | Data rate (Mbps) | BDP (packets) | K (sec)\r\n--|------|---------------------|----------|------------------|---------------|--------\r\n0.4 | 0.7 | 1500 | 0.1 | 1 | 8 | 2\r\n0.4 | 0.7 | 1500 | 0.1 | 10 | 83 | 4\r\n0.4 | 0.7 | 1500 | 0.1 | 100 | 833 | 9\r\n0.4 | 0.7 | 1500 | 2 | 1 | 167 | 5\r\n0.4 | 0.7 | 1500 | 2 | 10 | 1667 | 11\r\n0.4 | 0.7 | 1500 | 2 | 100 | 16667 | 23\r\n0.4 | 0.7 | 1500 | 600 | 1 | 50000 | 33\r\n0.4 | 0.7 | 1500 | 600 | 10 | 500000 | 72\r\n0.4 | 0.7 | 1500 | 600 | 100 | 5000000 | 155\r\n0.4 | 0.7 | 1500 | 1200 | 0.1 | 100000 | 20\r\n0.4 | 0.7 | 1500 | 1200 | 1 | 1000000 | 42\r\n0.4 | 0.7 | 1500 | 1200 | 10 | 10000000 | 91\r\n0.4 | 0.7 | 1500 | 1200 | 100 | 100000000 | 196\r\n\r\nWhat we can see is that the value of K gets larger than the RTT as soon as the RTT is above several minutes. This is a very different behavior from the \"terrestrial\" or even \"GEO\" conditions, in which each \"saw tooth\" lasts many RTT. Basically, that means Cubic, too, is not going to work. Yes, it is possible to pick different values of C that restore some sanity, but that means creating a loop between RTT measurement and Cubic parameters, something that Cubic designers expressly did not want. They wanted the grow curve to be independent of RTT, so connections with different RTT would still be treated fairly.\r\n\r\nBBR does perform much better, because it does not have constants with time dimension. It simply adapts to the RTT. It will work, as long as the RTT does not increase too much during the connection.\r\n",
+          "createdAt": "2023-11-06T07:10:30Z",
+          "updatedAt": "2023-11-06T07:25:18Z"
+        }
+      ]
     },
     {
       "number": 10,
@@ -211,9 +219,55 @@
       "labels": [],
       "body": "draft-ietf-quic-ack-frequency seems pretty relevant to what we are doing. Might want to say something about it",
       "createdAt": "2023-10-23T18:47:18Z",
-      "updatedAt": "2023-10-23T18:47:18Z",
+      "updatedAt": "2023-11-06T17:24:50Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "body": "Already implemented and used in the trials. Does considerably reduce the ACK overhead in our case.",
+          "createdAt": "2023-11-06T07:51:37Z",
+          "updatedAt": "2023-11-06T07:51:37Z"
+        },
+        {
+          "author": "marcblanchet",
+          "authorAssociation": "COLLABORATOR",
+          "body": "should say a word on this in the draft: should highly consider implementing ack-frequency and also provide some hints on how to properly set the values.",
+          "createdAt": "2023-11-06T13:56:24Z",
+          "updatedAt": "2023-11-06T13:56:24Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "body": "We could, but the parameters are mostly the same as for terrestrial network -- the time between ACK is set as a fraction of the RTT, the number of packets set as fraction of the CWIN, so it adapts automatically.\r\n",
+          "createdAt": "2023-11-06T17:24:50Z",
+          "updatedAt": "2023-11-06T17:24:50Z"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOKFdyE8517YOM",
+      "title": "Long duration connections with intermittent connectivity",
+      "url": "https://github.com/huitema/quic-in-space/issues/12",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "We need a discussion there, because it is not obvious that long duration connections work well, especially with intermittent connectivity, like what would occur between Earth and a station on a rotating planet.\r\n\r\nSuppose that the normal RTT is 20 minutes, but that every 12 hours the connectivity is suspended for 12 hours. The endpoints will detect the failure of the connectivity after 1 PTO, which is about 1 RTT. The QUIC code will attempt to repeat the last packet, per RFC 9002, and wait first for one RTO, then double that after each iteration. This gives the following:\r\n\r\nRTT | Iteration | Timeout (s) | Time elapsed (hours)\r\n----| ----------| ------------| --------------------\r\n12000 | 0 | 1200 | 0.33\r\n12000 | 1 | 1200 | 0.67\r\n12000 | 2 | 2400 | 1.33\r\n12000 | 3 | 4800 | 2.67\r\n12000 | 4 | 9600 | 5.33\r\n12000 | 5 | 19200 | 10.67\r\n12000 | 6 | 38400 | 21.33\r\n12000 | 7 | 76800| *21.67*\r\n\r\n\r\nWe can certainly let the endpoints do that, but look what happens at the end. At the repetition number 6, the exponential backoff has increased the timeout to over 10 hours. The repetition number 7 starts 21:20 hours after the initial \"cut\", when the timeout number 6 fires. It succeeds, ant the endpoint learns at 21:40 that the link is back on. But that's 9:40 hours after the path was restored!\r\n\r\nIn short, relying on the standard timer behavior is not good enough. We will need a new parameter, something like a maximum interval between repetitions, set as a fraction of the average duration of connectivity. Or, we will have to add a \"connectivity restored\" signal of some kind, to kick the QUIC stack out of its sleeping state.",
+      "createdAt": "2023-11-06T07:44:51Z",
+      "updatedAt": "2023-11-06T07:50:22Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "OWNER",
+          "body": "There are other issues. We want connections to last \"forever\", and keep repeating some kind of probe until they get a reply. But what if a connection is actually broken? Some of the end to end connections go to the work stations of the controller. What if that work station fails, or is rebooted for a system update?\r\n\r\nMost QUIC deployment avoid connections that last too long, and instead rely on QUIC \"session resumption\" facility (with or without 0 RTT). \r\n\r\nIt might be good to consider that all these 'periodic ping' and other 'session resume attempts' should be started by the system with the most resource, e.g., a workstation rather than a spacecraft.",
+          "createdAt": "2023-11-06T07:50:22Z",
+          "updatedAt": "2023-11-06T07:50:22Z"
+        }
+      ]
     }
   ],
   "pulls": [

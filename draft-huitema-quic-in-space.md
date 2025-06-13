@@ -280,7 +280,7 @@ from previous connections, then use the remembered values to speed up
 the start-up phase of congestion control.
 
 The "careful resume" draft suggest a cautious approach of only using the remembered
-BDP values after the RTT has been verified, see {{!I-D.tsvwg-careful-resume}}.
+BDP values after the RTT has been verified, see {{!I-D.ietf-tsvwg-careful-resume}}.
 This verification takes one RTT, which is a tradeoff between the desire to ramp up
 transmission rate promptly and the risk of causing congestion on the transmission
 path if the remembered value exceeds the current path characteristics.

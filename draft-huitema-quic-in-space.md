@@ -200,7 +200,7 @@ two endpoints, both peers should proposed values that allow for a successful han
 
 The packet loss detection algorithm use timers
 based on the most recent RTT measurements. If the RTT increases to a value above
-that timer, this is very likely to be interpreted as an indication of loss. 
+that timer, this is very likely to be interpreted as an indication of loss.
 Handling large delay increase from a few minutes to more than an hour will
 require updating these algorithms.
 

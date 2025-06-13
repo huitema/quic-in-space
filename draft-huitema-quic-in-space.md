@@ -207,7 +207,7 @@ require updating these algorithms.
 Congestion control protocols typically compute a "congestion window" that tracks
 the bandwidth-delay product of the connection. If the congestion window is
 tuned for a delay of 8 minutes and the delay suddenly jumps to more than
-an hour as mentioned in {{path-change}}, the congestion window will be
+an hour as mentioned in {{path-changes}}, the congestion window will be
 suddenly 64 times too small. Algorithm that remain in the "congestion
 avoidance" phase increase the congestion window very slowly, which would cause
 under-utilization of the network during the period of delay changes.

@@ -1055,7 +1055,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Huitema &amp; Blanchet</td>
-<td class="center">Expires 11 December 2025</td>
+<td class="center">Expires 15 December 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1068,12 +1068,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-huitema-quic-in-space-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-09" class="published">9 June 2025</time>
+<time datetime="2025-06-13" class="published">13 June 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-11">11 December 2025</time></dd>
+<dd class="expires"><time datetime="2025-12-15">15 December 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1131,7 +1131,7 @@ such as IoT in disconnected and distant settings.<a href="#section-abstract-1" c
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 11 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1180,6 +1180,9 @@ such as IoT in disconnected and distant settings.<a href="#section-abstract-1" c
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
                 <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-idle-timeout" class="internal xref">Idle Timeout</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-timers-and-path-changes" class="internal xref">Timers and Path Changes</a></p>
 </li>
             </ul>
 </li>
@@ -1278,8 +1281,43 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-path-changes">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-path-changes" class="section-name selfRef">Path Changes</a>
       </h2>
-<p id="section-3-1">In deep space in a direct communication scenario such as an Earth ground station to directly an asset on Mars, the RTT is large but pretty stable. However, when an orbiter acting as a communication relay is used, the RTT has a very different pattern. As a simple example scenario, Earth communicates to orbiter which communicates to a Mars asset and vice-versa, Mars is at its nearest distance to Earth (4 minutes delay) and the orbiter takes 2 hours to make a circular orbit, which means 1 hour reachable from Earth. In this scenario, the Earth ground station will see a stable RTT (~8 minutes) to the orbiter when the orbiter is directly reachable from Earth and the asset is reachable from the orbiter. When the orbiter is no more reachable as it is going on the far side, the ground station will accumulate packets over time, and then when the orbiter becomes reachable again, will send those buffered packets. The first buffered packets just after the orbiter is unreachable will have 1 hour + 8 minutes RTT. The last buffered packets just before the orbiter becomes reachable will have a 8 minutes RTT. In between, it will be essentially linear. In this simple scenario, the RTT shows a sawtooth pattern with some stable value period. Obviously, depending on the location of the asset, the type of orbit, the number of orbiters and assets, etc, that pattern will be more complex and different. However, it will still show an important jump, like from 8 minutes to 1 hour, in the RTT.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">The bandwidth of a path in deep space may change based on the conditions. However, experience with Mars (ref to study) shows that it is pretty constant for the same orbiter links to Earth and to the assets. However, if a different orbiter is used on the return path and/or if  optical links are used on some legs where radio links were used previously, then bandwidth would change. However, this is pretty theorical, as paths and routing is very static and planned in advance in space. Therefore, a bandwidth change in the path within a short period of time, or within the time of some packets exchange will be exceptional. If a connection is kept for weeks or months, then it is possible then a few times the path bandwidth will change.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-1">The movement of planets or their satellites implies that the network topology
+will change over time. For example, a station on the surface of Mars will only
+"see" Earth for half a Martian day. or rather sol. If it only relied on direct
+line communication, contact would be lost for half a day. We expect that this
+periodic absence of connectivity will be palliated by communication
+infrastructure such as satellites orbiting Mars. We expect similar satellites
+play a role on the Moon, if we want to enable communication with stations located
+on its hidden face.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">We can speculate that at some point in the future, constellations of satellites
+will orbit Mars or the Moon, and provide high quality communication similar to
+what we see on Earth. However, we also expect that the first generation of
+or orbiters will be much less complex. Stations on the hidden side
+of Mars or the Moon will send packets to an orbiting satellite, the
+satellite will store them until relay station
+or maybe Earth is visible, and then forward the stored packets. The packets
+could be stored for fraction of an orbit, probably up to 1 hour assuming
+a 2 hours orbital time for the orbiters.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">A station on the surface of Mars could communicate directly with Earth during
+half a sol, and then rely on the orbiters during the other half. The transmission
+latency will jump from a few minutes during direct communication to that plus
+a couple hours. The store and forward latency of the orbiter will not be constant
+The first buffered packets just after
+the orbiter is unreachable will have 1 hour + 8 minutes RTT. The last buffered packets
+just before the orbiter becomes reachable will have a 8 minutes RTT. In between, it will
+be essentially linear. In this simple scenario, the RTT shows a sawtooth pattern with
+some stable value period.
+Obviously, depending on the location of the asset, the type of orbit, the number of orbiters
+and assets, etc, that pattern will be more complex and different. However, it will still
+show an important jump, like from 8 minutes to 1 hour, in the RTT.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">The bandwidth of a path in deep space may change based on the conditions. However, experience
+with Mars (ref to study) shows that it is pretty constant for the same orbiter links to Earth
+and to the assets. However, if a different orbiter is used on the return path and/or
+if  optical links are used on some legs where radio links were used previously, then bandwidth
+would change. However, this is pretty theorical, as paths and routing is very static and
+planned in advance in space. Therefore, a bandwidth change in the path within a short period
+of time, or within the time of some packets exchange will be exceptional. If a connection is
+kept for weeks or months, then it is possible then a few times the path bandwidth will change.<a href="#section-3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="timers">
@@ -1376,6 +1414,27 @@ connection attempt will be interrupted by the Idle Timeout and will fail.<a href
 two endpoints, both peers should proposed values that allow for a successful handshake.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="timers-and-path-changes">
+<section id="section-4.4">
+        <h3 id="name-timers-and-path-changes">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-timers-and-path-changes" class="section-name selfRef">Timers and Path Changes</a>
+        </h3>
+<p id="section-4.4-1">The packet loss detection algorithm use timers
+based on the most recent RTT measurements. If the RTT increases to a value above
+that timer, this is very likely to be interpreted as an indication of loss.
+Handling large delay increase from a few minutes to more than an hour will
+require updating these algorithms.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.4-2">Congestion control protocols typically compute a "congestion window" that tracks
+the bandwidth-delay product of the connection. If the congestion window is
+tuned for a delay of 8 minutes and the delay suddenly jumps to more than
+an hour as mentioned in <a href="#path-changes" class="auto internal xref">Section 3</a>, the congestion window will be
+suddenly 64 times too small. Algorithm that remain in the "congestion
+avoidance" phase increase the congestion window very slowly, which would cause
+under-utilization of the network during the period of delay changes.
+The congestion control protocols will have to be updated to handle
+these communication patterns.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="flow-control">
@@ -1466,7 +1525,7 @@ satellites. The recommended approach is to somehow remember path characteristics
 from previous connections, then use the remembered values to speed up
 the start-up phase of congestion control.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 <p id="section-6.1-2">The "careful resume" draft suggest a cautious approach of only using the remembered
-BDP values after the RTT has been verified, see <span>[<a href="#I-D.tsvwg-careful-resume" class="cite xref">I-D.tsvwg-careful-resume</a>]</span>.
+BDP values after the RTT has been verified, see <span>[<a href="#I-D.ietf-tsvwg-careful-resume" class="cite xref">I-D.ietf-tsvwg-careful-resume</a>]</span>.
 This verification takes one RTT, which is a tradeoff between the desire to ramp up
 transmission rate promptly and the risk of causing congestion on the transmission
 path if the remembered value exceeds the current path characteristics.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
@@ -1581,9 +1640,9 @@ be discussed in a future version of this document.<a href="#section-9-1" class="
 <a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
-<dt id="I-D.tsvwg-careful-resume">[I-D.tsvwg-careful-resume]</dt>
+<dt id="I-D.ietf-tsvwg-careful-resume">[I-D.ietf-tsvwg-careful-resume]</dt>
         <dd>
-<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
+<span class="refAuthor">Kuhn, N.</span>, <span class="refAuthor">Stephan, E.</span>, <span class="refAuthor">Fairhurst, G.</span>, <span class="refAuthor">Secchi, R.</span>, and <span class="refAuthor">C. Huitema</span>, <span class="refTitle">"Convergence of Congestion Control from Retained State"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tsvwg-careful-resume-18</span>, <time datetime="2025-05-23" class="refDate">23 May 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-careful-resume-18">https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-careful-resume-18</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>

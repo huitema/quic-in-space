@@ -78,15 +78,48 @@ network management considerations are out of scope of this document.
 
 {::boilerplate bcp14-tagged}
 
-# Path Changes
+# Path Changes {#path-changes}
 
-In deep space in a direct communication scenario such as an Earth ground station to directly an asset on Mars, the RTT is large but pretty stable. However, when an orbiter acting as a communication relay is used, the RTT has a very different pattern. 
+The movement of planets or their satellites implies that the network topology
+will change over time. For example, a station on the surface of Mars will only
+"see" Earth for half a Martian day. or rather sol. If it only relied on direct
+line communication, contact would be lost for half a day. We expect that this
+periodic absence of connectivity will be palliated by communication
+infrastructure such as satellites orbiting Mars. We expect similar satellites
+play a role on the Moon, if we want to enable communication with stations located
+on its hidden face.
 
-As a simple example scenario, Earth communicates to orbiter which communicates to a Mars asset and vice-versa, Mars is at its nearest distance to Earth (4 minutes delay) and the orbiter takes 2 hours to make a circular orbit, which means 1 hour reachable from Earth. In this scenario, the Earth ground station will see a stable RTT (~8 minutes) to the orbiter when the orbiter is directly reachable from Earth and the asset is reachable from the orbiter. When the orbiter is no more reachable as it is going on the far side, the ground station will accumulate packets over time, and then when the orbiter becomes reachable again, will send those buffered packets. The first buffered packets just after the orbiter is unreachable will have 1 hour + 8 minutes RTT. The last buffered packets just before the orbiter becomes reachable will have a 8 minutes RTT. In between, it will be essentially linear. In this simple scenario, the RTT shows a sawtooth pattern with some stable value period. 
+We can speculate that at some point in the future, constellations of satellites
+will orbit Mars or the Moon, and provide high quality communication similar to
+what we see on Earth. However, we also expect that the first generation of
+or orbiters will be much less complex. Stations on the hidden side
+of Mars or the Moon will send packets to an orbiting satellite, the
+satellite will store them until relay station
+or maybe Earth is visible, and then forward the stored packets. The packets
+could be stored for fraction of an orbit, probably up to 1 hour assuming
+a 2 hours orbital time for the orbiters.
 
-Obviously, depending on the location of the asset, the type of orbit, the number of orbiters and assets, etc, that pattern will be more complex and different. However, it will still show an important jump, like from 8 minutes to 1 hour, in the RTT.
+A station on the surface of Mars could communicate directly with Earth during
+half a sol, and then rely on the orbiters during the other half. The transmission
+latency will jump from a few minutes during direct communication to that plus
+a couple hours. The store and forward latency of the orbiter will not be constant
+The first buffered packets just after
+the orbiter is unreachable will have 1 hour + 8 minutes RTT. The last buffered packets
+just before the orbiter becomes reachable will have a 8 minutes RTT. In between, it will
+be essentially linear. In this simple scenario, the RTT shows a sawtooth pattern with
+some stable value period.
+Obviously, depending on the location of the asset, the type of orbit, the number of orbiters
+and assets, etc, that pattern will be more complex and different. However, it will still
+show an important jump, like from 8 minutes to 1 hour, in the RTT.
 
-The bandwidth of a path in deep space may change based on the conditions. However, experience with Mars (ref to study) shows that it is pretty constant for the same orbiter links to Earth and to the assets. However, if a different orbiter is used on the return path and/or if  optical links are used on some legs where radio links were used previously, then bandwidth would change. However, this is pretty theorical, as paths and routing is very static and planned in advance in space. Therefore, a bandwidth change in the path within a short period of time, or within the time of some packets exchange will be exceptional. If a connection is kept for weeks or months, then it is possible then a few times the path bandwidth will change.
+The bandwidth of a path in deep space may change based on the conditions. However, experience
+with Mars (ref to study) shows that it is pretty constant for the same orbiter links to Earth
+and to the assets. However, if a different orbiter is used on the return path and/or
+if  optical links are used on some legs where radio links were used previously, then bandwidth
+would change. However, this is pretty theorical, as paths and routing is very static and
+planned in advance in space. Therefore, a bandwidth change in the path within a short period
+of time, or within the time of some packets exchange will be exceptional. If a connection is
+kept for weeks or months, then it is possible then a few times the path bandwidth will change.
 
 # Timer Constants in QUIC {#timers}
 
@@ -162,6 +195,24 @@ connection attempt will be interrupted by the Idle Timeout and will fail.
 
 Since the idle timeout is negotiated as the minimum of the values proposed by the
 two endpoints, both peers should proposed values that allow for a successful handshake.
+
+## Timers and Path Changes
+
+The packet loss detection algorithm use timers
+based on the most recent RTT measurements. If the RTT increases to a value above
+that timer, this is very likely to be interpreted as an indication of loss. 
+Handling large delay increase from a few minutes to more than an hour will
+require updating these algorithms.
+
+Congestion control protocols typically compute a "congestion window" that tracks
+the bandwidth-delay product of the connection. If the congestion window is
+tuned for a delay of 8 minutes and the delay suddenly jumps to more than
+an hour as mentioned in {{path-change}}, the congestion window will be
+suddenly 64 times too small. Algorithm that remain in the "congestion
+avoidance" phase increase the congestion window very slowly, which would cause
+under-utilization of the network during the period of delay changes.
+The congestion control protocols will have to be updated to handle
+these communication patterns.
 
 # Flow Control
 

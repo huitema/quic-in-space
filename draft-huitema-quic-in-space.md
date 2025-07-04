@@ -99,27 +99,27 @@ or maybe Earth is visible, and then forward the stored packets. The packets
 could be stored for fraction of an orbit, probably up to 1 hour assuming
 a 2 hours orbital time for the orbiters.
 
-A station on the surface of Mars could communicate directly with Earth during
-half a sol, and then rely on the orbiters during the other half. The transmission
-latency will jump from a few minutes during direct communication to that plus
-a couple hours. The store and forward latency of the orbiter will not be constant
-The first buffered packets just after
-the orbiter is unreachable will have 1 hour + 8 minutes RTT. The last buffered packets
-just before the orbiter becomes reachable will have a 8 minutes RTT. In between, it will
-be essentially linear. In this simple scenario, the RTT shows a sawtooth pattern with
-some stable value period.
+The transmission delay will jump from a few minutes when a station or a rover on
+the surface of Mars can either communicate directly with Earth or communicate
+with an orbiter that can, to that plus a couple of hours when the station has to
+wait for the orbiter to carry packets until transmission is possible. Each state
+lasting approximately half a Martian sol, while the queuing time in the orbiter
+will vary from immediate when transmission is possible to a variable fraction of the
+orbit duration when it is not. In a typical scenario, the RTT 
+will show a sawtooth pattern with some stable value period.
 Obviously, depending on the location of the asset, the type of orbit, the number of orbiters
 and assets, etc, that pattern will be more complex and different. However, it will still
 show an important jump, like from 8 minutes to 1 hour, in the RTT.
 
-The bandwidth of a path in deep space may change based on the conditions. However, experience
-with Mars (ref to study) shows that it is pretty constant for the same orbiter links to Earth
+The bandwidth of a path in deep space may change based on the conditions. Experience
+with Mars shows that it is pretty constant for the same orbiter links to Earth
 and to the assets. However, if a different orbiter is used on the return path and/or
 if  optical links are used on some legs where radio links were used previously, then bandwidth
-would change. However, this is pretty theorical, as paths and routing is very static and
+would change. Today, all this is pretty theorical, as paths and routing is very static and
 planned in advance in space. Therefore, a bandwidth change in the path within a short period
 of time, or within the time of some packets exchange will be exceptional. If a connection is
-kept for weeks or months, then it is possible then a few times the path bandwidth will change.
+kept for weeks or months, then it is possible then the path bandwidth will only change
+a few times.
 
 # Timer Constants in QUIC {#timers}
 

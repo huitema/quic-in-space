@@ -105,7 +105,7 @@ with an orbiter that can, to that plus a couple of hours when the station has to
 wait for the orbiter to carry packets until transmission is possible. Each state
 lasting approximately half a Martian sol, while the queuing time in the orbiter
 will vary from immediate when transmission is possible to a variable fraction of the
-orbit duration when it is not. In a typical scenario, the RTT 
+orbit duration when it is not. In a typical scenario, the RTT
 will show a sawtooth pattern with some stable value period.
 Obviously, depending on the location of the asset, the type of orbit, the number of orbiters
 and assets, etc, that pattern will be more complex and different. However, it will still

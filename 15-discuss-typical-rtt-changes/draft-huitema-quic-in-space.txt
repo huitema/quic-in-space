@@ -5,8 +5,8 @@
 QUIC                                                          C. Huitema
 Internet-Draft                                      Private Octopus Inc.
 Intended status: Informational                               M. Blanchet
-Expires: 15 December 2025                                       Viagenie
-                                                            13 June 2025
+Expires: 5 January 2026                                         Viagenie
+                                                             4 July 2025
 
 
                              QUIC in Space
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 December 2025.
+   This Internet-Draft will expire on 5 January 2026.
 
 Copyright Notice
 
@@ -153,32 +153,31 @@ Table of Contents
    probably up to 1 hour assuming a 2 hours orbital time for the
    orbiters.
 
-   A station on the surface of Mars could communicate directly with
-   Earth during half a sol, and then rely on the orbiters during the
-   other half.  The transmission latency will jump from a few minutes
-   during direct communication to that plus a couple hours.  The store
-   and forward latency of the orbiter will not be constant The first
-   buffered packets just after the orbiter is unreachable will have 1
-   hour + 8 minutes RTT.  The last buffered packets just before the
-   orbiter becomes reachable will have a 8 minutes RTT.  In between, it
-   will be essentially linear.  In this simple scenario, the RTT shows a
-   sawtooth pattern with some stable value period.  Obviously, depending
-   on the location of the asset, the type of orbit, the number of
-   orbiters and assets, etc, that pattern will be more complex and
-   different.  However, it will still show an important jump, like from
-   8 minutes to 1 hour, in the RTT.
+   The transmission delay will jump from a few minutes when a station or
+   a rover on the surface of Mars can either communicate directly with
+   Earth or communicate with an orbiter that can, to that plus a couple
+   of hours when the station has to wait for the orbiter to carry
+   packets until transmission is possible.  Each state lasting
+   approximately half a Martian sol, while the queuing time in the
+   orbiter will vary from immediate when transmission is possible to a
+   variable fraction of the orbit duration when it is not.  In a typical
+   scenario, the RTT will show a sawtooth pattern with some stable value
+   period.  Obviously, depending on the location of the asset, the type
+   of orbit, the number of orbiters and assets, etc, that pattern will
+   be more complex and different.  However, it will still show an
+   important jump, like from 8 minutes to 1 hour, in the RTT.
 
    The bandwidth of a path in deep space may change based on the
-   conditions.  However, experience with Mars (ref to study) shows that
-   it is pretty constant for the same orbiter links to Earth and to the
-   assets.  However, if a different orbiter is used on the return path
-   and/or if optical links are used on some legs where radio links were
-   used previously, then bandwidth would change.  However, this is
-   pretty theorical, as paths and routing is very static and planned in
-   advance in space.  Therefore, a bandwidth change in the path within a
-   short period of time, or within the time of some packets exchange
-   will be exceptional.  If a connection is kept for weeks or months,
-   then it is possible then a few times the path bandwidth will change.
+   conditions.  Experience with Mars shows that it is pretty constant
+   for the same orbiter links to Earth and to the assets.  However, if a
+   different orbiter is used on the return path and/or if optical links
+   are used on some legs where radio links were used previously, then
+   bandwidth would change.  Today, all this is pretty theorical, as
+   paths and routing is very static and planned in advance in space.
+   Therefore, a bandwidth change in the path within a short period of
+   time, or within the time of some packets exchange will be
+   exceptional.  If a connection is kept for weeks or months, then it is
+   possible then the path bandwidth will only change a few times.
 
 4.  Timer Constants in QUIC
 
@@ -461,9 +460,9 @@ Table of Contents
               Kuhn, N., Stephan, E., Fairhurst, G., Secchi, R., and C.
               Huitema, "Convergence of Congestion Control from Retained
               State", Work in Progress, Internet-Draft, draft-ietf-
-              tsvwg-careful-resume-18, 23 May 2025,
+              tsvwg-careful-resume-19, 18 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-
-              careful-resume-18>.
+              careful-resume-19>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,

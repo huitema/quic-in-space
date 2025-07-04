@@ -14,14 +14,14 @@ Using the experience of various testbeds, it provides guidance to implementation
 this use case. This document may apply to other use cases that have similar characteristics,
 such as IoT in disconnected and distant settings. 
     " name="description">
-<meta content="xml2rfc 3.28.1" name="generator">
+<meta content="xml2rfc 3.29.0" name="generator">
 <meta content="quic" name="keyword">
 <meta content="delay tolerant" name="keyword">
 <meta content="space communication" name="keyword">
 <meta content="draft-huitema-quic-in-space-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.28.1
-    Python 3.12.10
+  xml2rfc 3.29.0
+    Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
@@ -30,7 +30,7 @@ such as IoT in disconnected and distant settings.
     platformdirs 4.3.8
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.3
+    requests 2.32.4
     setuptools 80.9.0
     wcwidth 0.2.13
 -->
@@ -1051,11 +1051,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">QUIC in Space</td>
-<td class="right">June 2025</td>
+<td class="right">July 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Huitema &amp; Blanchet</td>
-<td class="center">Expires 15 December 2025</td>
+<td class="center">Expires 5 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1068,12 +1068,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-huitema-quic-in-space-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-13" class="published">13 June 2025</time>
+<time datetime="2025-07-04" class="published">4 July 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-15">15 December 2025</time></dd>
+<dd class="expires"><time datetime="2026-01-05">5 January 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1131,7 +1131,7 @@ such as IoT in disconnected and distant settings.<a href="#section-abstract-1" c
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 15 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1298,26 +1298,26 @@ satellite will store them until relay station
 or maybe Earth is visible, and then forward the stored packets. The packets
 could be stored for fraction of an orbit, probably up to 1 hour assuming
 a 2 hours orbital time for the orbiters.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">A station on the surface of Mars could communicate directly with Earth during
-half a sol, and then rely on the orbiters during the other half. The transmission
-latency will jump from a few minutes during direct communication to that plus
-a couple hours. The store and forward latency of the orbiter will not be constant
-The first buffered packets just after
-the orbiter is unreachable will have 1 hour + 8 minutes RTT. The last buffered packets
-just before the orbiter becomes reachable will have a 8 minutes RTT. In between, it will
-be essentially linear. In this simple scenario, the RTT shows a sawtooth pattern with
-some stable value period.
+<p id="section-3-3">The transmission delay will jump from a few minutes when a station or a rover on
+the surface of Mars can either communicate directly with Earth or communicate
+with an orbiter that can, to that plus a couple of hours when the station has to
+wait for the orbiter to carry packets until transmission is possible. Each state
+lasting approximately half a Martian sol, while the queuing time in the orbiter
+will vary from immediate when transmission is possible to a variable fraction of the
+orbit duration when it is not. In a typical scenario, the RTT
+will show a sawtooth pattern with some stable value period.
 Obviously, depending on the location of the asset, the type of orbit, the number of orbiters
 and assets, etc, that pattern will be more complex and different. However, it will still
 show an important jump, like from 8 minutes to 1 hour, in the RTT.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<p id="section-3-4">The bandwidth of a path in deep space may change based on the conditions. However, experience
-with Mars (ref to study) shows that it is pretty constant for the same orbiter links to Earth
+<p id="section-3-4">The bandwidth of a path in deep space may change based on the conditions. Experience
+with Mars shows that it is pretty constant for the same orbiter links to Earth
 and to the assets. However, if a different orbiter is used on the return path and/or
 if  optical links are used on some legs where radio links were used previously, then bandwidth
-would change. However, this is pretty theorical, as paths and routing is very static and
+would change. Today, all this is pretty theorical, as paths and routing is very static and
 planned in advance in space. Therefore, a bandwidth change in the path within a short period
 of time, or within the time of some packets exchange will be exceptional. If a connection is
-kept for weeks or months, then it is possible then a few times the path bandwidth will change.<a href="#section-3-4" class="pilcrow">¶</a></p>
+kept for weeks or months, then it is possible then the path bandwidth will only change
+a few times.<a href="#section-3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="timers">
@@ -1642,7 +1642,7 @@ be discussed in a future version of this document.<a href="#section-9-1" class="
 <dl class="references">
 <dt id="I-D.ietf-tsvwg-careful-resume">[I-D.ietf-tsvwg-careful-resume]</dt>
         <dd>
-<span class="refAuthor">Kuhn, N.</span>, <span class="refAuthor">Stephan, E.</span>, <span class="refAuthor">Fairhurst, G.</span>, <span class="refAuthor">Secchi, R.</span>, and <span class="refAuthor">C. Huitema</span>, <span class="refTitle">"Convergence of Congestion Control from Retained State"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tsvwg-careful-resume-18</span>, <time datetime="2025-05-23" class="refDate">23 May 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-careful-resume-18">https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-careful-resume-18</a>&gt;</span>. </dd>
+<span class="refAuthor">Kuhn, N.</span>, <span class="refAuthor">Stephan, E.</span>, <span class="refAuthor">Fairhurst, G.</span>, <span class="refAuthor">Secchi, R.</span>, and <span class="refAuthor">C. Huitema</span>, <span class="refTitle">"Convergence of Congestion Control from Retained State"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tsvwg-careful-resume-19</span>, <time datetime="2025-06-18" class="refDate">18 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-careful-resume-19">https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-careful-resume-19</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>

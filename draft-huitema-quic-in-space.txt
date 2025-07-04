@@ -5,8 +5,8 @@
 QUIC                                                          C. Huitema
 Internet-Draft                                      Private Octopus Inc.
 Intended status: Informational                               M. Blanchet
-Expires: 13 December 2025                                       Viagenie
-                                                            11 June 2025
+Expires: 5 January 2026                                         Viagenie
+                                                             4 July 2025
 
 
                              QUIC in Space
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 December 2025.
+   This Internet-Draft will expire on 5 January 2026.
 
 Copyright Notice
 
@@ -74,22 +74,24 @@ Table of Contents
 
    1.  Introduction
    2.  Conventions and Definitions
-   3.  Timer Constants in QUIC
-     3.1.  Probe Timeout and Initial RTT (#initial-rtt)
-     3.2.  Idle Timeout
-   4.  Flow Control
-   5.  Congestion control and Slow Start
-     5.1.  Setting the initial BDP
-   6.  Packet losses
-     6.1.  Packet Losses During Handshake
-     6.2.  Reordering Buffers
-     6.3.  Using Forward Error Correction
-   7.  Further studies
-   8.  Security Considerations
-   9.  IANA Considerations
-   10. References
-     10.1.  Normative References
-     10.2.  Informative References
+   3.  Path Changes
+   4.  Timer Constants in QUIC
+     4.1.  Probe Timeout and Initial RTT (#initial-rtt)
+     4.2.  Idle Timeout
+     4.3.  Timers and Path Changes
+   5.  Flow Control
+   6.  Congestion control and Slow Start
+     6.1.  Setting the initial BDP
+   7.  Packet losses
+     7.1.  Packet Losses During Handshake
+     7.2.  Reordering Buffers
+     7.3.  Using Forward Error Correction
+   8.  Further studies
+   9.  Security Considerations
+   10. IANA Considerations
+   11. References
+     11.1.  Normative References
+     11.2.  Informative References
    Acknowledgments
    Authors' Addresses
 
@@ -127,7 +129,56 @@ Table of Contents
    BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-3.  Timer Constants in QUIC
+3.  Path Changes
+
+   The movement of planets or their satellites implies that the network
+   topology will change over time.  For example, a station on the
+   surface of Mars will only "see" Earth for half a Martian day. or
+   rather sol.  If it only relied on direct line communication, contact
+   would be lost for half a day.  We expect that this periodic absence
+   of connectivity will be palliated by communication infrastructure
+   such as satellites orbiting Mars.  We expect similar satellites play
+   a role on the Moon, if we want to enable communication with stations
+   located on its hidden face.
+
+   We can speculate that at some point in the future, constellations of
+   satellites will orbit Mars or the Moon, and provide high quality
+   communication similar to what we see on Earth.  However, we also
+   expect that the first generation of or orbiters will be much less
+   complex.  Stations on the hidden side of Mars or the Moon will send
+   packets to an orbiting satellite, the satellite will store them until
+   relay station or maybe Earth is visible, and then forward the stored
+   packets.  The packets could be stored for fraction of an orbit,
+   probably up to 1 hour assuming a 2 hours orbital time for the
+   orbiters.
+
+   The transmission delay will jump from a few minutes when a station or
+   a rover on the surface of Mars can either communicate directly with
+   Earth or communicate with an orbiter that can, to that plus a couple
+   of hours when the station has to wait for the orbiter to carry
+   packets until transmission is possible.  Each state lasting
+   approximately half a Martian sol, while the queuing time in the
+   orbiter will vary from immediate when transmission is possible to a
+   variable fraction of the orbit duration when it is not.  In a typical
+   scenario, the RTT will show a sawtooth pattern with some stable value
+   period.  Obviously, depending on the location of the asset, the type
+   of orbit, the number of orbiters and assets, etc, that pattern will
+   be more complex and different.  However, it will still show an
+   important jump, like from 8 minutes to 1 hour, in the RTT.
+
+   The bandwidth of a path in deep space may change based on the
+   conditions.  Experience with Mars shows that it is pretty constant
+   for the same orbiter links to Earth and to the assets.  However, if a
+   different orbiter is used on the return path and/or if optical links
+   are used on some legs where radio links were used previously, then
+   bandwidth would change.  Today, all this is pretty theorical, as
+   paths and routing is very static and planned in advance in space.
+   Therefore, a bandwidth change in the path within a short period of
+   time, or within the time of some packets exchange will be
+   exceptional.  If a connection is kept for weeks or months, then it is
+   possible then the path bandwidth will only change a few times.
+
+4.  Timer Constants in QUIC
 
    QUIC implementations typically use a number of time related
    variables, with different characteristics.  Some may be constants
@@ -138,7 +189,7 @@ Table of Contents
    usable in those deep space scenarios.  Therefore, this document
    discusses them in the following sections.
 
-3.1.  Probe Timeout and Initial RTT (#initial-rtt)
+4.1.  Probe Timeout and Initial RTT (#initial-rtt)
 
    As defined in [QUIC-RECOVERY], QUIC uses two mechanisms to detect
    packet losses.  The acknowledgement based method detect losses if a
@@ -183,7 +234,7 @@ Table of Contents
    maximum number of repeats has been reached, or because the "idle
    timeout" has been exceeded.
 
-3.2.  Idle Timeout
+4.2.  Idle Timeout
 
    The idle timeout is defined in Section 10.1 of [QUIC-TRANSPORT].
    Each peer proposes a "max_idle_timeout" value, and commits to close
@@ -208,7 +259,26 @@ Table of Contents
    proposed by the two endpoints, both peers should proposed values that
    allow for a successful handshake.
 
-4.  Flow Control
+4.3.  Timers and Path Changes
+
+   The packet loss detection algorithm use timers based on the most
+   recent RTT measurements.  If the RTT increases to a value above that
+   timer, this is very likely to be interpreted as an indication of
+   loss.  Handling large delay increase from a few minutes to more than
+   an hour will require updating these algorithms.
+
+   Congestion control protocols typically compute a "congestion window"
+   that tracks the bandwidth-delay product of the connection.  If the
+   congestion window is tuned for a delay of 8 minutes and the delay
+   suddenly jumps to more than an hour as mentioned in Section 3, the
+   congestion window will be suddenly 64 times too small.  Algorithm
+   that remain in the "congestion avoidance" phase increase the
+   congestion window very slowly, which would cause under-utilization of
+   the network during the period of delay changes.  The congestion
+   control protocols will have to be updated to handle these
+   communication patterns.
+
+5.  Flow Control
 
    Flow control in QUIC allows an endpoint to limit how many bytes the
    peer can send on the opened streams, on specific streams, and how
@@ -240,7 +310,7 @@ Table of Contents
    algorithms are at risk here, especially if they use a low default
    value until RTT and bandwidth have been measured.
 
-5.  Congestion control and Slow Start
+6.  Congestion control and Slow Start
 
    QUIC implementations use congestion control to ensure that they are
    not sending data faster than the network path can forward, which
@@ -275,7 +345,7 @@ Table of Contents
    increases by at most one packet per RTT -- which would be completely
    inadequate with RTTs of several minutes.
 
-5.1.  Setting the initial BDP
+6.1.  Setting the initial BDP
 
    The congestion control issues are not specific to the very long
    delays of space communications.  They are visible on paths through
@@ -286,15 +356,15 @@ Table of Contents
 
    The "careful resume" draft suggest a cautious approach of only using
    the remembered BDP values after the RTT has been verified, see
-   [I-D.tsvwg-careful-resume].  This verification takes one RTT, which
-   is a tradeoff between the desire to ramp up transmission rate
+   [I-D.ietf-tsvwg-careful-resume].  This verification takes one RTT,
+   which is a tradeoff between the desire to ramp up transmission rate
    promptly and the risk of causing congestion on the transmission path
    if the remembered value exceeds the current path characteristics.
 
    If the BDP is remembered and set, the value can also be used to set
-   flow control parameters as mentioned in Section 4.
+   flow control parameters as mentioned in Section 5.
 
-6.  Packet losses
+7.  Packet losses
 
    Packet losses will likely occur in space communications like in other
    media.  The loss recovery mechanisms spedified in [QUIC-RECOVERY]
@@ -305,7 +375,7 @@ Table of Contents
    duration of the transfer past the time of availability of the
    transmission links.
 
-6.1.  Packet Losses During Handshake
+7.1.  Packet Losses During Handshake
 
    Packet losses during the initial handshake may prevent the endpoints
    from obtaining a proper estimate of the RTT.  An implementation in
@@ -316,7 +386,7 @@ Table of Contents
    packets.  This may look wasteful, but it does ensure that the
    handshake completes rapidly even if some packets are actually lost.
 
-6.2.  Reordering Buffers
+7.2.  Reordering Buffers
 
    If packets carrying stream data are lost, the other packets received
    on that stream are supposed to be buffered until the packet loss is
@@ -326,18 +396,18 @@ Table of Contents
    risking otherwise some significant performance bottlenecks.
 
    Reordering will also interfere with per-stream and per-connection
-   flow control.  In Section 4, we wrote that the amount of credits
+   flow control.  In Section 5, we wrote that the amount of credits
    should be at least one full BDP.  But if we assume that a full BDP
    worth of buffers can be consumed by reordering after losses, then the
    required credits are actually two BDPs, not just one.
 
-6.3.  Using Forward Error Correction
+7.3.  Using Forward Error Correction
 
    The effect of packet losses could be alleviated by using some form of
    Forward Error Correction.  This is an active research issue, see for
    example [I-D.michel-quic-fec]
 
-7.  Further studies
+8.  Further studies
 
    There are other considerations related to using QUIC in space,
    related to naming, security, or the management of multiple paths.
@@ -360,22 +430,27 @@ Table of Contents
    with long delays ought to be discussed in a future version of this
    document.
 
-8.  Security Considerations
+9.  Security Considerations
 
    The solutions envisaged here to alleviate the effect of long delays
    on QUIC connections may well create some form of security issues.
    These ought to be discussed in a future version of this document.
 
-9.  IANA Considerations
+10.  IANA Considerations
 
    This document has no IANA actions.
 
-10.  References
+11.  References
 
-10.1.  Normative References
+11.1.  Normative References
 
-   [I-D.tsvwg-careful-resume]
-              "*** BROKEN REFERENCE ***".
+   [I-D.ietf-tsvwg-careful-resume]
+              Kuhn, N., Stephan, E., Fairhurst, G., Secchi, R., and C.
+              Huitema, "Convergence of Congestion Control from Retained
+              State", Work in Progress, Internet-Draft, draft-ietf-
+              tsvwg-careful-resume-19, 18 June 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-
+              careful-resume-19>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -386,7 +461,7 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-10.2.  Informative References
+11.2.  Informative References
 
    [DTN-ARCH] Cerf, V., Burleigh, S., Hooke, A., Torgerson, L., Durst,
               R., Scott, K., Fall, K., and H. Weiss, "Delay-Tolerant
